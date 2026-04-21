@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router'; // Add this line!
 
 // Dummy data for now (later this will come from our database)
 const dummyMedicines = [
@@ -8,6 +9,7 @@ const dummyMedicines = [
 ];
 
 export default function DashboardScreen() {
+    const router = useRouter();
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <View>
@@ -31,7 +33,10 @@ export default function DashboardScreen() {
         contentContainerStyle={styles.list}
       />
 
-      <TouchableOpacity style={styles.addButton}>
+      <TouchableOpacity 
+        style={styles.addButton} 
+        onPress={() => router.push('/add')} // Add this onPress!
+      >
         <Text style={styles.addButtonText}>+ Add Medicine</Text>
       </TouchableOpacity>
     </View>
