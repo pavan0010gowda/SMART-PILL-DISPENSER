@@ -58,10 +58,6 @@ export default function DashboardScreen() {
           contentContainerStyle={styles.list}
         />
       )}
-
-      <TouchableOpacity style={styles.addButton} onPress={() => router.push('/add')}>
-        <Text style={styles.addButtonText}>+ Add Medicine</Text>
-      </TouchableOpacity>
     </View>
   );
 }
