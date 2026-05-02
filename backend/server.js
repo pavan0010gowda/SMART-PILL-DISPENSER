@@ -1,6 +1,10 @@
+require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
+const twilio = require('twilio'); // ADD THIS
+// Initialize the Twilio robot using your secret keys
+const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 require('dotenv').config();
 const cron = require('node-cron');
 const app = express();
@@ -99,14 +103,26 @@ cron.schedule('* * * * *', () => {
 
         if (results.length > 0) {
             results.forEach(med => {
-                // For now, we just print a massive warning. 
-                // Later, this is where the Twilio SMS code goes!
-                console.log(`\n======================================================`);
-                console.log(`🚨 ESCALATION ALERT: MISSED MEDICATION! 🚨`);
-                console.log(`Medicine: ${med.name} (${med.dosage})`);
-                console.log(`Scheduled Time: ${med.time} (5 minutes ago)`);
-                console.log(`Action: Sending SMS to emergency contact...`);
-                console.log(`======================================================\n`);
+                console.log(`\n🚨 MISSED MEDICATION: ${med.name}! Triggering SMS...`);
+                
+                // --- DEBUG TRACKER ---
+                console.log(`Checking Twilio Keys... SID exists: ${!!process.env.TWILIO_ACCOUNT_SID}`);
+
+                // 1. Initialize Twilio
+                const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
+                // 2. Fire the Emergency Text Message!
+                twilioClient.messages.create({
+                    body: `URGENT MEDICAL ALERT: A medication was missed! Medicine: ${med.name} (${med.dosage}). Scheduled for: ${med.time}. Please check on them immediately!`,
+                    from: process.env.TWILIO_PHONE_NUMBER,
+                    to: process.env.EMERGENCY_CONTACT_NUMBER
+                })
+                .then(message => {
+                    console.log(`✅ SMS Delivered Successfully! Message ID: ${message.sid}\n`);
+                })
+                .catch(error => {
+                    console.error(`❌ SMS Failed to send! Error:`, error.message);
+                });
             });
         }
     });
