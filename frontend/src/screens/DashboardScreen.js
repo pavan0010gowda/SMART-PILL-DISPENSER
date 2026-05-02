@@ -8,7 +8,7 @@ export default function DashboardScreen() {
   const [loading, setLoading] = useState(true);
 
   // MAKE SURE THIS IS YOUR CORRECT IP ADDRESS!
-  const SERVER_URL = 'http://10.202.44.88:5000/api/medicines'; 
+  const SERVER_URL = 'http://192.168.1.9:5000/api/medicines'; 
 
   const fetchMedicines = async () => {
     try {
